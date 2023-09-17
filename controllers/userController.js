@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 
 const generateToken = (id) => {
@@ -12,7 +11,7 @@ const generateToken = (id) => {
 // @desc: Register new user
 // @access: Public
 // @route POST /api/users
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser = async (req, res) => {
  try {
   const user = await User.create({
     username,
@@ -25,11 +24,11 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('Invalid user data');
   };
-} catch (error) {
-  res.status(500);
-  throw new Error('Server Error');
-}
-});
+  } catch (error) {
+    res.status(500);
+    throw new Error('Server Error');
+  }
+};
 
 // @desc: Login user
 // @access: Public

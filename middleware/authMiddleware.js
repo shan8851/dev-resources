@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken');
-const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 
-const protect = asyncHandler(async (req, res, next) => {
+const protect = async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
@@ -11,14 +10,17 @@ const protect = asyncHandler(async (req, res, next) => {
       req.user = await User.findById(decodedToken.id).select('-password');
       next();
     } catch (error) {
-      res.status(401);
-      throw new Error('Not authorized, token failed');
+      console.error(error);
+      if (error instanceof jwt.TokenExpiredError) {
+        return res.status(401).json({ message: 'Token expired' });
+      } else if (error instanceof jwt.JsonWebTokenError) {
+        return res.status(401).json({ message: 'Invalid token' });
+      }
+      return res.status(401).json({ message: 'Not authorized, token failed' });
     }
+  } else {
+    return res.status(401).json({ message: 'Not authorized, no token' });
   }
-  if (!token) {
-    res.status(401);
-    throw new Error('Not authorized, no token');
-  }
-});
+};
 
 module.exports = { protect };
