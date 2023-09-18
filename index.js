@@ -3,7 +3,6 @@ const colors = require('colors');
 const dotenv = require('dotenv').config();
 
 const connectDB = require('./config/db');
-const { connect } = require('mongoose');
 const port = process.env.PORT || 5001;
 
 connectDB();
