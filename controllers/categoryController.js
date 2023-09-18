@@ -1,9 +1,12 @@
+const Category = require('../models/Category');
+
 // @desc: Get all category
 // @access: Public
 // @route GET /api/category
 const getAllCategories = async (req, res) => {
  try {
-    res.json({ message: 'Get all categories'})
+    const categories = await Category.find();
+    res.json(categories)
   } catch (error) {
     res.status(500);
     throw new Error('Server Error');
@@ -15,7 +18,8 @@ const getAllCategories = async (req, res) => {
 // @route POST /api/category
 const addCategory = async (req, res) => {
  try {
-    res.json({ message: 'Add category' })
+    const category = await Category.create(req.body);
+    res.json(category)
   } catch (error) {
     res.status(500);
     throw new Error('Server Error');
