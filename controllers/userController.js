@@ -12,21 +12,31 @@ const generateToken = (id) => {
 // @access: Public
 // @route POST /api/users
 const registerUser = async (req, res) => {
- try {
-  const user = await User.create({
-    username,
-    email,
-    password: hashedPassword,
-  });
-  if (user) {
-    res.status(201).json({ message: 'User created', _id: user.id, name: user.name, token: generateToken(user._id) })
-  } else {
-    res.status(400);
-    throw new Error('Invalid user data');
-  };
+  try {
+    const { username, email, password } = req.body;
+
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const user = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    if (user) {
+      res.status(201).json({
+        message: 'User created',
+        _id: user.id,
+        name: user.name,
+        token: generateToken(user._id),
+      });
+    } else {
+      res.status(400).json({ message: 'Invalid user data' });
+    }
   } catch (error) {
-    res.status(500);
-    throw new Error('Server Error');
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
@@ -55,15 +65,19 @@ const loginUser = async (req, res) => {
 };
 
 // @desc: Get user data
-// @access: Public
+// @access: Private
 // @route GET /api/users/me
 const getUser = async (req, res) => {
   try {
-    // TODO: Fetching logic here
-    res.json({ message: 'User data' });
+    if (!req.user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(req.user);
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
 
 module.exports = { registerUser, loginUser, getUser };
