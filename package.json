@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "server": "nodemon index.js",
-    "test": "npm test"
+    "test": "jest"
   },
   "author": "shan8851",
   "license": "MIT",
@@ -27,6 +27,8 @@
     "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1",
+    "supertest": "^6.3.3"
   }
 }
