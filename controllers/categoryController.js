@@ -30,13 +30,25 @@ const addCategory = async (req, res) => {
 // @access: Private
 // @route POST /api/category
 const editCategory = async (req, res) => {
- try {
-    res.json({ message: `Edit category ${req.params.id}` })
-  } catch (error) {
-    res.status(500);
-    throw new Error('Server Error');
-  }
+   try {
+      const category = await Category.findById(req.params.id);
+
+      if (category) {
+         category.name = req.body.name || category.name;
+         // Add more fields if there are any
+
+         const updatedCategory = await category.save();
+         res.json(updatedCategory);
+      } else {
+         res.status(404);
+         throw new Error('Category not found');
+      }
+   } catch (error) {
+      res.status(500);
+      throw new Error('Server Error');
+   }
 };
+
 
 
 
@@ -44,13 +56,22 @@ const editCategory = async (req, res) => {
 // @access: Private
 // @route DELETE /api/category
 const deleteCategory = async (req, res) => {
- try {
-    res.json({ message: `Delete category ${req.params.id}` })
-  } catch (error) {
-    res.status(500);
-    throw new Error('Server Error');
-  }
+   try {
+      const category = await Category.findById(req.params.id);
+
+      if (category) {
+         await category.remove();
+         res.json({ message: 'Category removed' });
+      } else {
+         res.status(404);
+         throw new Error('Category not found');
+      }
+   } catch (error) {
+      res.status(500);
+      throw new Error('Server Error');
+   }
 };
+
 
 module.exports = {
   getAllCategories,

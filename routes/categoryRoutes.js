@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAllCategories, addCategory, editCategory, deleteCategory } = require('../controllers/categoryController');
+const { protect } = require('../middleware/authMiddleware');
 
 /**
  * @swagger
@@ -24,11 +25,22 @@ router.route('/').get(getAllCategories);
  *      - Categories
  *    summary: Add a category
  *    description: Adds a new category to the database
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              name:
+ *                type: string
+ *    security:
+ *      - bearerAuth: []
  *    responses:
  *      '201':
  *        description: Successfully added a new category
  */
-router.route('/').post(addCategory);
+router.route('/').post(protect, checkAdmin, addCategory);
 
 /**
  * @swagger
@@ -43,11 +55,22 @@ router.route('/').post(addCategory);
  *        name: id
  *        required: true
  *        description: The ID of the category to edit
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              name:
+ *                type: string
+ *    security:
+ *      - bearerAuth: []
  *    responses:
  *      '200':
  *        description: Successfully edited category
  */
-router.route('/:id').put(editCategory);
+router.route('/:id').put(protect, checkAdmin, editCategory);
 
 /**
  * @swagger
@@ -62,12 +85,12 @@ router.route('/:id').put(editCategory);
  *        name: id
  *        required: true
  *        description: The ID of the category to delete
+ *    security:
+ *      - bearerAuth: []
  *    responses:
  *      '200':
  *        description: Successfully deleted category
  */
-router.route('/:id').delete(deleteCategory);
-
-
+router.route('/:id').delete(protect, checkAdmin, deleteCategory);
 
 module.exports = router;

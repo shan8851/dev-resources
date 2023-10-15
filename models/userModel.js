@@ -19,6 +19,11 @@ const userSchema = mongoose.Schema({
     required: [true, 'Please add a password'],
     minlength: 6,
   },
+  role: {
+   type: String,
+   enum: ['user', 'admin'],
+   default: 'user'
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
