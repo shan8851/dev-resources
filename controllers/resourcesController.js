@@ -2,13 +2,40 @@
 // @access: Public
 // @route GET /api/resources
 const getAllResources = async (req, res) => {
- try {
-    res.json({ message: 'Get all goals'})
+  try {
+    const queryObj = {};
+
+    // Basic filtering logic...
+    if (req.query.category) {
+      queryObj.category = req.query.category;
+    }
+
+    if (req.query.tag) {
+      queryObj.tags = { $in: [req.query.tag] };
+    }
+
+    // Pagination logic...
+    const page = Number(req.query.page) || 1;       // Default to page 1
+    const limit = Number(req.query.limit) || 10;    // Default to 10 items per page
+    const skip = (page - 1) * limit;
+
+    const totalResources = await Resource.countDocuments(queryObj);
+    const resources = await Resource.find(queryObj).skip(skip).limit(limit);
+
+    res.json({
+      page,
+      totalPages: Math.ceil(totalResources / limit),
+      totalResources,
+      count: resources.length,
+      resources
+    });
+
   } catch (error) {
     res.status(500);
     throw new Error('Server Error');
   }
 };
+
 
 // @desc: Add resources
 // @access: Private
@@ -48,7 +75,10 @@ const editResource = async (req, res) => {
 
     // Update the resource details
     resource.name = req.body.name || resource.name;
-    // Add other fields similarly...
+    resource.description = req.body.description || resource.description;
+    resource.link = req.body.link || resource.link;
+    resource.category = req.body.category || resource.category;
+    resource.tags = req.body.tags || resource.tags;
 
     const updatedResource = await resource.save();
     res.json(updatedResource);
