@@ -4,6 +4,8 @@ const dotenv = require('dotenv').config();
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+const morgan = require('morgan');
 
 const options = {
   definition: {
@@ -26,6 +28,10 @@ const options = {
   apis: ['./routes/*.js'],
 };
 
+const limiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
 const specs = swaggerJsdoc(options);
 
 
@@ -42,7 +48,10 @@ const corsOptions = {
     credentials: true,
 };
 app.use(cors(corsOptions));
-
+app.use('/api/', limiter);
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use(express.json());

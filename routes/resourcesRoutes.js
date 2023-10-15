@@ -2,7 +2,27 @@ const express = require('express');
 const { getAllResources, addResource, editResource, deleteResource } = require('../controllers/resourcesController');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
+const expressRedisCache = require('express-redis-cache')({ expire: 60 }); // Cache for 60 seconds
+const Joi = require('joi');
 
+const resourceValidationSchema = Joi.object({
+  name: Joi.string().required().trim(),
+  description: Joi.string().trim().default(""),
+  category: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/), // Assuming ObjectId is a 24-character hex string
+  link: Joi.string().required().trim().uri(),
+  tags: Joi.array().items(Joi.string().trim()),
+  user: Joi.string().required().pattern(/^[0-9a-fA-F]{24}$/),
+});
+
+const validateResource = (req, res, next) => {
+  const { error } = resourceValidationSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).send({ error: error.details[0].message });
+  }
+
+  next();
+};
 
 /**
  * @swagger
@@ -10,8 +30,8 @@ const { protect } = require('../middleware/authMiddleware');
  *  get:
  *    tags:
  *      - Resources
- *    summary: Get all resources with optional pagination and filtering
- *    description: Fetches all resources from the database with optional pagination and filtering
+ *    summary: Get all resources with optional pagination, filtering, and sorting
+ *    description: Fetches all resources from the database with optional pagination, filtering, and sorting
  *    parameters:
  *      - in: query
  *        name: page
@@ -23,12 +43,21 @@ const { protect } = require('../middleware/authMiddleware');
  *        description: The number of resources per page (defaults to 10)
  *        schema:
  *          type: integer
+ *      - in: query
+ *        name: sortBy
+ *        description: The field to sort by (either 'name' or 'updatedAt')
+ *        schema:
+ *          type: string
+ *      - in: query
+ *        name: order
+ *        description: The sorting order (either 'asc' or 'desc')
+ *        schema:
+ *          type: string
  *    responses:
  *      '200':
- *        description: A successful response containing paginated resources
+ *        description: A successful response containing paginated, filtered, and sorted resources
  */
-
-router.route('/').get(getAllResources);
+router.route('/').get(expressRedisCache.route(), getAllResources);
 
 /**
  * @swagger
@@ -55,7 +84,8 @@ router.route('/').get(getAllResources);
  *      '201':
  *        description: Successfully added a new resource
  */
-router.route('/').post(protect, addResource);
+router.route('/').post(protect, validateResource, addResource);
+
 
 
 /**

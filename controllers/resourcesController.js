@@ -5,7 +5,6 @@ const getAllResources = async (req, res) => {
   try {
     const queryObj = {};
 
-    // Basic filtering logic...
     if (req.query.category) {
       queryObj.category = req.query.category;
     }
@@ -14,13 +13,20 @@ const getAllResources = async (req, res) => {
       queryObj.tags = { $in: [req.query.tag] };
     }
 
-    // Pagination logic...
     const page = Number(req.query.page) || 1;       // Default to page 1
     const limit = Number(req.query.limit) || 10;    // Default to 10 items per page
     const skip = (page - 1) * limit;
 
+    let sortObj = {};
+    if (req.query.sortBy && ['name', 'updatedAt'].includes(req.query.sortBy)) {
+      sortObj[req.query.sortBy] = req.query.order === 'desc' ? -1 : 1;
+    }
+
     const totalResources = await Resource.countDocuments(queryObj);
-    const resources = await Resource.find(queryObj).skip(skip).limit(limit);
+    const resources = await Resource.find(queryObj)
+                                    .skip(skip)
+                                    .limit(limit)
+                                    .sort(sortObj);
 
     res.json({
       page,
@@ -35,6 +41,7 @@ const getAllResources = async (req, res) => {
     throw new Error('Server Error');
   }
 };
+
 
 
 // @desc: Add resources
