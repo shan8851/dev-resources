@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getAllCategories, addCategory, editCategory, deleteCategory } = require('../controllers/categoryController');
 const { protect } = require('../middleware/authMiddleware');
+const { checkAdmin } = require('../middleware/checkAdmin');
 
 /**
  * @swagger

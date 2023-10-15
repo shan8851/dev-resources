@@ -6,3 +6,5 @@ const checkAdmin = (req, res, next) => {
     throw new Error('Not authorized as an admin');
   }
 }
+
+module.exports = { checkAdmin };

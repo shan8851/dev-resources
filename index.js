@@ -1,6 +1,6 @@
 const express = require('express');
 const colors = require('colors');
-const dotenv = require('dotenv').config();
+const dotenv = require('dotenv');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const cors = require('cors');
@@ -61,6 +61,7 @@ app.use('/api/v1/categories', require('./routes/categoryRoutes'));
 app.use('/api/v1/users', require('./routes/userRoutes'));
 app.use('/api/v1/resources', require('./routes/resourcesRoutes'));
 
-app.listen(port, () => {
-    console.log(`Dev resources server is running on port ${port}`);
+app.listen(port, '0.0.0.0', () => {
+   console.log(`Dev resources server is running on port ${port}`);
 });
+
