@@ -13,17 +13,38 @@ const getAllCategories = async (req, res) => {
   }
 };
 
-// @desc: Add category
-// @access: Private
-// @route POST /api/category
+// @desc: Add a new category
+// @access: Admin Only (Protected)
+// @route POST /api/categories
 const addCategory = async (req, res) => {
- try {
-    const category = await Category.create(req.body);
-    res.json(category)
-  } catch (error) {
-    res.status(500);
-    throw new Error('Server Error');
-  }
+    try {
+        const { name, description } = req.body;
+
+        // Check if the category already exists
+        const existingCategory = await Category.findOne({ name });
+        if (existingCategory) {
+            return res.status(400).json({ message: 'Category already exists' });
+        }
+
+        // Create a new category
+        const category = new Category({
+            name,
+            description
+        });
+
+        await category.save();
+
+        res.status(201).json({
+            success: true,
+            data: category
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: `Server Error: ${error}`
+        });
+    }
 };
 
 // @desc: Edit category
@@ -35,7 +56,7 @@ const editCategory = async (req, res) => {
 
       if (category) {
          category.name = req.body.name || category.name;
-         // Add more fields if there are any
+         category.description = req.body.description || category.description;
 
          const updatedCategory = await category.save();
          res.json(updatedCategory);

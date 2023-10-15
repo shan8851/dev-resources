@@ -92,9 +92,9 @@ router.post('/login', loginUser);
 
 /**
  * @swagger
- * /api/v1/users/get:
+ * /api/v1/users/me:
  *   get:
- *     summary: Retrieve a user's information
+ *     summary: Retrieve the authenticated user's information
  *     tags: [Users]
  *     security:
  *       - BearerAuth: []
@@ -106,12 +106,18 @@ router.post('/login', loginUser);
  *             schema:
  *               type: object
  *               properties:
- *                 message:
+ *                 _id:
  *                   type: string
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *       404:
+ *         description: User not found
  *       500:
  *         description: Server Error
  */
-router.get('/get', protect, getUser);
+router.get('/me', protect, getUser);
 
 
 module.exports = router;

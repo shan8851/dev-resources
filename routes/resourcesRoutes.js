@@ -25,7 +25,7 @@ const validateResource = (req, res, next) => {
 
 /**
  * @swagger
- * /api/resources:
+ * /api/v1/resources:
  *  get:
  *    tags:
  *      - Resources
@@ -60,7 +60,7 @@ router.route('/').get(getAllResources);
 
 /**
  * @swagger
- * /api/resources:
+ * /api/v1/resources:
  *  post:
  *    tags:
  *      - Resources
@@ -79,6 +79,8 @@ router.route('/').get(getAllResources);
  *                type: string
  *              description:
  *                type: string
+ *              category:
+ *                type: string
  *    responses:
  *      '201':
  *        description: Successfully added a new resource
@@ -89,7 +91,7 @@ router.route('/').post(protect, validateResource, addResource);
 
 /**
  * @swagger
- * /api/resources/{id}:
+ * /api/v1/resources/{id}:
  *  put:
  *    tags:
  *      - Resources
@@ -110,7 +112,7 @@ router.route('/:id').put(protect, validateResource, editResource);
 
 /**
  * @swagger
- * /api/resources/{id}:
+ * /api/v1/resources/{id}:
  *  delete:
  *    tags:
  *      - Resources

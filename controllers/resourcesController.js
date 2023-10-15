@@ -1,3 +1,5 @@
+const Resource = require("../models/resourceModel");
+
 // @desc: Get all resources
 // @access: Public
 // @route GET /api/resources

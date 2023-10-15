@@ -6,7 +6,7 @@ const { checkAdmin } = require('../middleware/checkAdmin');
 
 /**
  * @swagger
- * /api/categories:
+ * /api/v1/categories:
  *  get:
  *    tags:
  *      - Categories
@@ -20,7 +20,7 @@ router.route('/').get(getAllCategories);
 
 /**
  * @swagger
- * /api/categories:
+ * /api/v1/categories:
  *  post:
  *    tags:
  *      - Categories
@@ -35,6 +35,12 @@ router.route('/').get(getAllCategories);
  *            properties:
  *              name:
  *                type: string
+ *                description: Name of the category.
+ *                example: "Web Development"
+ *              description:
+ *                type: string
+ *                description: Description for the category.
+ *                example: "All resources related to web development."
  *    security:
  *      - bearerAuth: []
  *    responses:
@@ -43,9 +49,10 @@ router.route('/').get(getAllCategories);
  */
 router.route('/').post(protect, checkAdmin, addCategory);
 
+
 /**
  * @swagger
- * /api/categories/{id}:
+ * /api/v1/categories/{id}:
  *  put:
  *    tags:
  *      - Categories
@@ -75,7 +82,7 @@ router.route('/:id').put(protect, checkAdmin, editCategory);
 
 /**
  * @swagger
- * /api/categories/{id}:
+ * /api/v1/categories/{id}:
  *  delete:
  *    tags:
  *      - Categories

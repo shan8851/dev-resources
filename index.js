@@ -1,6 +1,6 @@
 const express = require('express');
 const colors = require('colors');
-const dotenv = require('dotenv');
+const dotenv = require('dotenv').config();
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const cors = require('cors');
@@ -46,6 +46,7 @@ const corsOptions = {
     optionsSuccessStatus: 204,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
 };
 app.use(cors(corsOptions));
 app.use('/api/', limiter);
@@ -61,7 +62,9 @@ app.use('/api/v1/categories', require('./routes/categoryRoutes'));
 app.use('/api/v1/users', require('./routes/userRoutes'));
 app.use('/api/v1/resources', require('./routes/resourcesRoutes'));
 
-app.listen(port, '0.0.0.0', () => {
-   console.log(`Dev resources server is running on port ${port}`);
+const listenAddress = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+app.listen(port, listenAddress, () => {
+   console.log(`Dev resources server is running on ${listenAddress} on port ${port}`);
 });
+
 
