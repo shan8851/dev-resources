@@ -10,12 +10,24 @@ const { protect } = require('../middleware/authMiddleware');
  *  get:
  *    tags:
  *      - Resources
- *    summary: Get all resources
- *    description: Fetches all resources from the database
+ *    summary: Get all resources with optional pagination and filtering
+ *    description: Fetches all resources from the database with optional pagination and filtering
+ *    parameters:
+ *      - in: query
+ *        name: page
+ *        description: The current page (defaults to 1)
+ *        schema:
+ *          type: integer
+ *      - in: query
+ *        name: limit
+ *        description: The number of resources per page (defaults to 10)
+ *        schema:
+ *          type: integer
  *    responses:
  *      '200':
- *        description: A successful response containing all resources
+ *        description: A successful response containing paginated resources
  */
+
 router.route('/').get(getAllResources);
 
 /**
