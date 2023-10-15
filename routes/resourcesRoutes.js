@@ -2,7 +2,6 @@ const express = require('express');
 const { getAllResources, addResource, editResource, deleteResource } = require('../controllers/resourcesController');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
-const expressRedisCache = require('express-redis-cache')({ expire: 60 }); // Cache for 60 seconds
 const Joi = require('joi');
 
 const resourceValidationSchema = Joi.object({
@@ -57,7 +56,7 @@ const validateResource = (req, res, next) => {
  *      '200':
  *        description: A successful response containing paginated, filtered, and sorted resources
  */
-router.route('/').get(expressRedisCache.route(), getAllResources);
+router.route('/').get(getAllResources);
 
 /**
  * @swagger
@@ -107,7 +106,7 @@ router.route('/').post(protect, validateResource, addResource);
  *      '200':
  *        description: Successfully edited resource
  */
-router.route('/:id').put(protect, editResource);
+router.route('/:id').put(protect, validateResource, editResource);
 
 /**
  * @swagger
